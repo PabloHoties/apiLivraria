@@ -18,6 +18,6 @@ public class CriarAutorRequestDto {
 	@Size(min = 50, max = 1000, message = "Por favor, informe uma biografia de 8 a 150 caracteres.")
 	private String biografia;
 	
-	@NotNull(message = "Por faovr, informe a data de nascimento do autor.")
+	@NotNull(message = "Por favor, informe a data de nascimento do autor.")
 	private Date dataNascimento;
 }

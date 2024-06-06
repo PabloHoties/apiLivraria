@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,15 +28,15 @@ import org.springframework.test.web.servlet.MvcResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
 
-import br.com.cotiinformatica.domain.dtos.AtualizarEditoraRequestDto;
-import br.com.cotiinformatica.domain.dtos.CriarEditoraRequestDto;
-import br.com.cotiinformatica.domain.dtos.EditoraResponseDto;
-import br.com.cotiinformatica.domain.entities.Editora;
+import br.com.cotiinformatica.domain.dtos.AtualizarAutorRequestDto;
+import br.com.cotiinformatica.domain.dtos.AutorResponseDto;
+import br.com.cotiinformatica.domain.dtos.CriarAutorRequestDto;
+import br.com.cotiinformatica.domain.entities.Autor;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class EditorasTest {
+public class AutoresTest {
 
 	@Autowired
 	MockMvc mockMvc;
@@ -47,75 +48,88 @@ public class EditorasTest {
 
 	@Test
 	@Order(1)
-	public void criarEditoraComSucessoTest() throws Exception {
+	public void criarAutorComSucessoTest() throws Exception {
 
 		Faker faker = new Faker();
 
-		CriarEditoraRequestDto dto = new CriarEditoraRequestDto();
+		CriarAutorRequestDto dto = new CriarAutorRequestDto();
 		dto.setNome(faker.name().fullName());
+		dto.setBiografia(faker.lorem().paragraph());
+		dto.setDataNascimento(new Date());
 
-		MvcResult result = mockMvc.perform(post("/api/editoras/cadastrar").contentType("application/json")
+		MvcResult result = mockMvc.perform(post("/api/autores/cadastrar").contentType("application/json")
 				.content(objectMapper.writeValueAsString(dto))).andExpectAll(status().isCreated()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
 
-		EditoraResponseDto response = objectMapper.readValue(content, EditoraResponseDto.class);
+		AutorResponseDto response = objectMapper.readValue(content, AutorResponseDto.class);
 
 		assertNotNull(response.getId());
 		assertEquals(response.getNome(), dto.getNome());
+		assertEquals(response.getBiografia(), dto.getBiografia());
+		assertEquals(response.getDataNascimento(), dto.getDataNascimento());
 	}
 
 	@Test
 	@Order(2)
-	public void criarEditoraComDadosInvalidosTest() throws Exception {
+	public void criarAutorComDadosInvalidosTest() throws Exception {
 
-		CriarEditoraRequestDto dto = new CriarEditoraRequestDto();
+		CriarAutorRequestDto dto = new CriarAutorRequestDto();
 		dto.setNome("");
+		dto.setBiografia("");
+		dto.setDataNascimento(null);
 
-		MvcResult result = mockMvc
-				.perform(post("/api/editoras/cadastrar").contentType("application/json")
-						.content(objectMapper.writeValueAsString(dto)))
-				.andExpectAll(status().isBadRequest()).andReturn();
+		MvcResult result = mockMvc.perform(post("/api/autores/cadastrar").contentType("application/json")
+				.content(objectMapper.writeValueAsString(dto))).andExpectAll(status().isCreated()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
 
 		assertTrue(content.contains("nome: Por favor, informe o nome do autor."));
 		assertTrue(content.contains("nome: Por favor, informe um nome de 8 a 150 caracteres."));
+		assertTrue(content.contains("biografia: Por favor, informe a biografia do autor."));
+		assertTrue(content.contains("biografia: Por favor, informe uma biografia de 8 a 150 caracteres."));
+		assertTrue(content.contains("dataNascimento: Por favor, informe a data de nascimento do autor."));
 	}
 
 	@Test
 	@Order(3)
-	public void atualizarEditoraComSucessoTest() throws Exception {
+	public void atualizarAutorComSucessoTest() throws Exception {
 
 		Faker faker = new Faker();
 
-		AtualizarEditoraRequestDto dto = new AtualizarEditoraRequestDto();
+		AtualizarAutorRequestDto dto = new AtualizarAutorRequestDto();
 		dto.setId(id);
 		dto.setNome(faker.name().fullName());
+		dto.setBiografia(faker.lorem().paragraph());
+		dto.setDataNascimento(new Date());
 
-		MvcResult result = mockMvc.perform(put("/api/editoras/atualizar").contentType("application/json")
+		MvcResult result = mockMvc.perform(put("/api/autores/atualizar").contentType("application/json")
 				.content(objectMapper.writeValueAsString(dto))).andExpectAll(status().isOk()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
 
-		EditoraResponseDto response = objectMapper.readValue(content, EditoraResponseDto.class);
+		AutorResponseDto response = objectMapper.readValue(content, AutorResponseDto.class);
 
 		assertNotNull(response.getId());
 		assertEquals(response.getNome(), dto.getNome());
+		assertEquals(response.getBiografia(), dto.getBiografia());
+		assertEquals(response.getDataNascimento(), dto.getDataNascimento());
 	}
 
 	@Test
 	@Order(4)
-	public void atualizarEditoraComIdInvalidoTest() throws Exception {
+	public void atualizarAutorComIdInvalidoTest() throws Exception {
 
 		Faker faker = new Faker();
 
-		AtualizarEditoraRequestDto dto = new AtualizarEditoraRequestDto();
+		AtualizarAutorRequestDto dto = new AtualizarAutorRequestDto();
 		dto.setId(UUID.randomUUID());
 		dto.setNome(faker.name().fullName());
+		dto.setBiografia(faker.lorem().paragraph());
+		dto.setDataNascimento(new Date());
 
 		MvcResult result = mockMvc
-				.perform(put("/api/editoras/atualizar").contentType("application/json")
+				.perform(put("/api/autores/atualizar").contentType("application/json")
 						.content(objectMapper.writeValueAsString(dto)))
 				.andExpectAll(status().isBadRequest()).andReturn();
 
@@ -126,42 +140,47 @@ public class EditorasTest {
 
 	@Test
 	@Order(5)
-	public void atualizarEditoraComDadosInvalidosTest() throws Exception {
+	public void atualizarAutorComDadosInvalidosTest() throws Exception {
 
-		AtualizarEditoraRequestDto dto = new AtualizarEditoraRequestDto();
+		AtualizarAutorRequestDto dto = new AtualizarAutorRequestDto();
 		dto.setId(null);
 		dto.setNome("");
+		dto.setBiografia("");
+		dto.setDataNascimento(null);
 
 		MvcResult result = mockMvc
-				.perform(put("/api/editoras/atualizar").contentType("application/json")
+				.perform(put("/api/autores/atualizar").contentType("application/json")
 						.content(objectMapper.writeValueAsString(dto)))
 				.andExpectAll(status().isBadRequest()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
 
-		assertTrue(content.contains("id: Por favor, informe o ID da editora."));
+		assertTrue(content.contains("id: Por favor, informe o ID do autor."));
 		assertTrue(content.contains("nome: Por favor, informe o nome do autor."));
 		assertTrue(content.contains("nome: Por favor, informe um nome de 8 a 150 caracteres."));
+		assertTrue(content.contains("biografia: Por favor, informe a biografia do autor."));
+		assertTrue(content.contains("biografia: Por favor, informe uma biografia de 8 a 150 caracteres."));
+		assertTrue(content.contains("dataNascimento: Por favor, informe a data de nascimento do autor."));
 	}
 
 	@Test
 	@Order(6)
-	public void obterEditoraComSucessoTest() throws Exception {
+	public void obterAutorComSucessoTest() throws Exception {
 
-		MvcResult result = mockMvc.perform(get("/api/editoras/obter/" + id).contentType("application/json"))
+		MvcResult result = mockMvc.perform(get("/api/autores/obter/" + id).contentType("application/json"))
 				.andExpectAll(status().isOk()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
 
-		assertTrue(content.contains(id.toString()));
+		assertTrue(content.contains((id).toString()));
 	}
 
 	@Test
 	@Order(7)
-	public void obterEditoraComIdInvalidoTest() throws Exception {
+	public void obterAutorComIdInvalidoTest() throws Exception {
 
 		MvcResult result = mockMvc
-				.perform(get(("/api/editoras/obter/") + UUID.randomUUID()).contentType("application/json"))
+				.perform(get("/api/autores/obter/" + UUID.randomUUID()).contentType("application/json"))
 				.andExpectAll(status().isBadRequest()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
@@ -171,12 +190,12 @@ public class EditorasTest {
 
 	@Test
 	@Order(8)
-	public void consultarEditorasComSucessoTest() throws Exception {
+	public void consultarAutoresComSucessoTest() throws Exception {
 
-		List<Editora> editoras = new ArrayList<Editora>();
+		List<Autor> autores = new ArrayList<Autor>();
 
-		MvcResult result = mockMvc.perform(get("/api/editoras/consultar").contentType("application/json")
-				.content(objectMapper.writeValueAsString(editoras))).andExpectAll(status().isOk()).andReturn();
+		MvcResult result = mockMvc.perform(get("/api/autores/consultar").contentType("application/json")
+				.content(objectMapper.writeValueAsString(autores))).andExpectAll(status().isOk()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
 
@@ -185,10 +204,10 @@ public class EditorasTest {
 
 	@Test
 	@Order(9)
-	public void excluirEditoraComSucessoTest() throws Exception {
+	public void excluirAutorComSucessoTest() throws Exception {
 
 		MvcResult result = mockMvc
-				.perform(delete("/api/editoras/excluir/{id}", id.toString()).contentType("application/json"))
+				.perform(delete("/api/autores/excluir/{id}", id.toString()).contentType("application/json"))
 				.andExpectAll(status().isOk()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
@@ -198,10 +217,10 @@ public class EditorasTest {
 
 	@Test
 	@Order(10)
-	public void excluirEditoraComIdInvalidoTest() throws Exception {
+	public void excluirAutorComIdInvalidoTest() throws Exception {
 
 		MvcResult result = mockMvc.perform(
-				delete("/api/editoras/excluir/{id}", UUID.randomUUID().toString()).contentType("application/json"))
+				delete("/api/autores/excluir/{id}", UUID.randomUUID().toString()).contentType("application/json"))
 				.andExpectAll(status().isBadRequest()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
