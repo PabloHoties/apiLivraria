@@ -18,12 +18,12 @@ public class CriarLivroRequestDto {
 	@Size(min = 15, max = 500, message = "Por favor, informe uma descrição de 15 a 500 caracteres.")
 	private String descricao;
 	
-	@NotBlank(message = "Por favor, informe as páginas do livro.")
-	@Size(min = 1, max = 5, message = "Por favor, informe as páginas usando de 1 a 5 caracteres.")
+	@NotNull(message = "Por favor, informe as páginas do livro.")
+	@Size(min = 1, max = 10000, message = "Por favor, informe as páginas usando de 1 a 5 caracteres.")
 	private Integer paginas;
 	
-	@NotBlank(message = "Por favor, informe o preço do livro.")
-	@Size(min = 1, max = 5, message = "Por favor, informe o preço de 1 a 5 caracteres.")
+	@NotNull(message = "Por favor, informe o preço do livro.")
+	@Size(min = 0, max = 99999, message = "Por favor, informe o preço de 1 a 5 caracteres.")
 	private Double preco;
 	
 	@NotNull(message = "Por favor, informe o ID do autor.")

@@ -68,6 +68,8 @@ public class AutoresTest {
 		assertEquals(response.getNome(), dto.getNome());
 		assertEquals(response.getBiografia(), dto.getBiografia());
 		assertEquals(response.getDataNascimento(), dto.getDataNascimento());
+		
+		id = response.getId();
 	}
 
 	@Test
@@ -80,7 +82,7 @@ public class AutoresTest {
 		dto.setDataNascimento(null);
 
 		MvcResult result = mockMvc.perform(post("/api/autores/cadastrar").contentType("application/json")
-				.content(objectMapper.writeValueAsString(dto))).andExpectAll(status().isCreated()).andReturn();
+				.content(objectMapper.writeValueAsString(dto))).andExpectAll(status().isBadRequest()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
 

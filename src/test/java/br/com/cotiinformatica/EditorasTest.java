@@ -63,6 +63,8 @@ public class EditorasTest {
 
 		assertNotNull(response.getId());
 		assertEquals(response.getNome(), dto.getNome());
+		
+		id = response.getId();
 	}
 
 	@Test
