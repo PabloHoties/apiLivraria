@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import br.com.cotiinformatica.domain.dtos.AtualizarEditoraRequestDto;
 import br.com.cotiinformatica.domain.dtos.CriarEditoraRequestDto;
@@ -15,6 +16,7 @@ import br.com.cotiinformatica.domain.entities.Editora;
 import br.com.cotiinformatica.domain.interfaces.EditoraDomainService;
 import br.com.cotiinformatica.infrastructure.repositories.EditoraRepository;
 
+@Service
 public class EditoraDomainServiceImpl implements EditoraDomainService {
 
 	@Autowired
