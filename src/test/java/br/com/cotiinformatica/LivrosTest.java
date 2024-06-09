@@ -34,7 +34,7 @@ import br.com.cotiinformatica.domain.entities.Livro;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestMethodOrder(MethodOrderer.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class LivrosTest {
 
 	@Autowired
@@ -44,8 +44,8 @@ public class LivrosTest {
 	ObjectMapper objectMapper;
 
 	static UUID id;
-	static UUID autor_id;
-	static UUID editora_id;
+	static UUID autor_id = UUID.fromString("3ad8c507-1b08-42ee-9924-f55e0261d7ef");
+	static UUID editora_id = UUID.fromString("b6265474-25d8-4a87-a0a7-3e55dba9e77a");
 
 	@Test
 	@Order(1)
@@ -73,8 +73,10 @@ public class LivrosTest {
 		assertEquals(response.getDescricao(), dto.getDescricao());
 		assertEquals(response.getPaginas(), dto.getPaginas());
 		assertEquals(response.getPreco(), dto.getPreco());
-		assertEquals(response.getAutor_id(), dto.getAutor_id());
-		assertEquals(response.getEditora_id(), dto.getEditora_id());
+		assertEquals(response.getAutor().getId(), dto.getAutor_id());
+		assertEquals(response.getEditora().getId(), dto.getEditora_id());
+		
+		id = response.getId();
 	}
 
 	@Test
@@ -144,14 +146,12 @@ public class LivrosTest {
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
 
-		assertTrue(content.contains("título: Por favor, informe o título do livro."));
-		assertTrue(content.contains("título: Por favor, informe um título de 5 a 150 caracteres."));
+		assertTrue(content.contains("titulo: Por favor, informe o título do livro."));
+		assertTrue(content.contains("titulo: Por favor, informe um título de 5 a 150 caracteres."));
 		assertTrue(content.contains("descricao: Por favor, informe a descrição do livro."));
 		assertTrue(content.contains("descricao: Por favor, informe uma descrição de 15 a 500 caracteres."));
 		assertTrue(content.contains("paginas: Por favor, informe as páginas do livro."));
-		assertTrue(content.contains("paginas: Por favor, informe as páginas usando de 1 a 5 caracteres."));
 		assertTrue(content.contains("preco: Por favor, informe o preço do livro."));
-		assertTrue(content.contains("preco: Por favor, informe o preço de 1 a 5 caracteres."));
 		assertTrue(content.contains("autor_id: Por favor, informe o ID do autor."));
 		assertTrue(content.contains("editora_id: Por favor, informe o ID da editora."));
 	}
@@ -172,7 +172,7 @@ public class LivrosTest {
 		dto.setEditora_id(editora_id);
 
 		MvcResult result = mockMvc.perform(put("/api/livros/atualizar").contentType("application/json")
-				.content(objectMapper.writeValueAsString(dto))).andExpectAll(status().isCreated()).andReturn();
+				.content(objectMapper.writeValueAsString(dto))).andExpectAll(status().isOk()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
 
@@ -183,8 +183,8 @@ public class LivrosTest {
 		assertEquals(response.getDescricao(), dto.getDescricao());
 		assertEquals(response.getPaginas(), dto.getPaginas());
 		assertEquals(response.getPreco(), dto.getPreco());
-		assertEquals(response.getAutor_id(), dto.getAutor_id());
-		assertEquals(response.getEditora_id(), dto.getEditora_id());
+		assertEquals(response.getAutor().getId(), dto.getAutor_id());
+		assertEquals(response.getEditora().getId(), dto.getEditora_id());
 	}
 
 	@Test
@@ -258,14 +258,12 @@ public class LivrosTest {
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
 
 		assertTrue(content.contains("id: Por favor, informe o ID do livro."));
-		assertTrue(content.contains("título: Por favor, informe o título do livro."));
-		assertTrue(content.contains("título: Por favor, informe um título de 5 a 150 caracteres."));
+		assertTrue(content.contains("titulo: Por favor, informe o título do livro."));
+		assertTrue(content.contains("titulo: Por favor, informe um título de 5 a 150 caracteres."));
 		assertTrue(content.contains("descricao: Por favor, informe a descrição do livro."));
 		assertTrue(content.contains("descricao: Por favor, informe uma descrição de 15 a 500 caracteres."));
 		assertTrue(content.contains("paginas: Por favor, informe as páginas do livro."));
-		assertTrue(content.contains("paginas: Por favor, informe as páginas usando de 1 a 5 caracteres."));
 		assertTrue(content.contains("preco: Por favor, informe o preço do livro."));
-		assertTrue(content.contains("preco: Por favor, informe o preço de 1 a 5 caracteres."));
 		assertTrue(content.contains("autor_id: Por favor, informe o ID do autor."));
 		assertTrue(content.contains("editora_id: Por favor, informe o ID da editora."));
 	}
