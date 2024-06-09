@@ -12,6 +12,6 @@ public class LivroResponseDto {
 	private String descricao;
 	private Integer paginas;
 	private Double preco;
-	private UUID autor_id;
-	private UUID editora_id;
+	private AutorResponseDto autor;
+	private EditoraResponseDto editora;
 }

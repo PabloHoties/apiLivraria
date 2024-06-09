@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import br.com.cotiinformatica.domain.dtos.AtualizarLivroRequestDto;
 import br.com.cotiinformatica.domain.dtos.CriarLivroRequestDto;
 import br.com.cotiinformatica.domain.dtos.LivroResponseDto;
+import br.com.cotiinformatica.domain.entities.Autor;
+import br.com.cotiinformatica.domain.entities.Editora;
 import br.com.cotiinformatica.domain.entities.Livro;
 import br.com.cotiinformatica.domain.interfaces.LivroDomainService;
 import br.com.cotiinformatica.infrastructure.repositories.AutorRepository;
@@ -36,13 +38,20 @@ public class LivroDomainServiceImpl implements LivroDomainService {
 	@Override
 	public LivroResponseDto criarLivro(CriarLivroRequestDto dto) {
 
-		if (autorRepository.findById(dto.getAutor_id()).isEmpty())
+		Optional<Autor> autor = autorRepository.findById(dto.getAutor_id());
+
+		if (autor.isEmpty())
 			throw new IllegalArgumentException("Não foi possível encontrar um autor com o ID informado.");
 
-		if (editoraRepository.findById(dto.getEditora_id()).isEmpty())
+		Optional<Editora> editora = editoraRepository.findById(dto.getEditora_id());
+
+		if (editora.isEmpty())
 			throw new IllegalArgumentException("Não foi possível encontrar uma editora com o ID informado.");
 
 		Livro livro = modelMapper.map(dto, Livro.class);
+		livro.setId(UUID.randomUUID());
+		livro.setAutor(autor.get());
+		livro.setEditora(editora.get());
 
 		livroRepository.save(livro);
 
@@ -53,16 +62,22 @@ public class LivroDomainServiceImpl implements LivroDomainService {
 	@Override
 	public LivroResponseDto atualizarLivro(AtualizarLivroRequestDto dto) {
 
-		if (autorRepository.findById(dto.getAutor_id()).isEmpty())
+		Optional<Autor> autor = autorRepository.findById(dto.getAutor_id());
+		
+		if (autor.isEmpty())
 			throw new IllegalArgumentException("Não foi possível encontrar um autor com o ID informado.");
 
-		if (editoraRepository.findById(dto.getEditora_id()).isEmpty())
+		Optional<Editora> editora = editoraRepository.findById(dto.getEditora_id());
+		
+		if (editora.isEmpty())
 			throw new IllegalArgumentException("Não foi possível encontrar uma editora com o ID informado.");
 
 		if (livroRepository.findById(dto.getId()).isEmpty())
 			throw new IllegalArgumentException("Não foi possível encontrar um livro com o ID informado.");
 
 		Livro livro = modelMapper.map(dto, Livro.class);
+		livro.setAutor(autor.get());
+		livro.setEditora(editora.get());
 
 		livroRepository.save(livro);
 
